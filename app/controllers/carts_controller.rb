@@ -3,7 +3,7 @@
 class CartsController < ApplicationController
   before_action :cart
   before_action :product, only: :create
-  before_action :cart_product, only: :add_item
+  before_action :cart_product, only: %i[add_item remove_item]
 
   def create
     add_product_to_cart
@@ -19,6 +19,14 @@ class CartsController < ApplicationController
     return render json: { error: 'Product not found' }, status: :not_found unless cart_product
 
     cart_product.update(quantity: cart_product.quantity + cart_params[:quantity].to_i)
+
+    render json: cart_json, status: :ok
+  end
+
+  def remove_item
+    return render json: { error: 'Product not found' }, status: :not_found unless cart_product
+
+    cart_product.destroy
 
     render json: cart_json, status: :ok
   end

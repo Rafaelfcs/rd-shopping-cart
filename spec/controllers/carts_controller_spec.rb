@@ -118,4 +118,32 @@ RSpec.describe CartsController, type: :controller do
       end
     end
   end
+
+  describe 'DELETE #remove_item' do
+    subject { delete :remove_item, params: params, session: session }
+
+    context 'when product is found on cart' do
+      let!(:cart_product) do
+        FactoryBot.create(:cart_product, cart: cart, product: product, quantity: 1)
+      end
+
+      it 'remove the product from the cart' do
+        expect { subject }.to change { cart.cart_products.count }.by(-1)
+      end
+    end
+
+    context 'when product is not found on cart' do
+      let(:params) { { product_id: 0, quantity: 2 } }
+
+      it 'does not remove the product from the cart' do
+        expect { subject }.to change { cart.cart_products.count }.by(0)
+      end
+
+      it 'returns not found status' do
+        subject
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end
