@@ -107,14 +107,7 @@ Response:
 
 Criar um endpoint para excluir um produto do do carrinho. 
 
-ROTA: `/cart/remove_item`
-Payload:
-```
-{
-  "product_id": 3,
-  "quantity": 1
-}
-```
+ROTA: `/cart/:product_id`
 Response:
 ```json
 {
