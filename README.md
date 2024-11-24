@@ -1,9 +1,32 @@
 # Desafio técnico e-commerce
 
-### Registrar um produto no carrinho
-Endpoint para inserção de produtos no carrinho.
+## Nossas expectativas
 
-Se não existir um carrinho para a sessão, irá criar um carrinho.
+A equipe de engenharia da RD Station tem alguns princípios nos quais baseamos nosso trabalho diário. Um deles é: projete seu código para ser mais fácil de entender, não mais fácil de escrever.
+
+Portanto, para nós, é mais importante um código de fácil leitura do que um que utilize recursos complexos e/ou desnecessários.
+
+O que gostaríamos de ver:
+
+- O código deve ser fácil de ler. Clean Code pode te ajudar.
+- Notas gerais e informações sobre a versão da linguagem e outras informações importantes para executar seu código.
+- Código que se preocupa com a performance (complexidade de algoritmo).
+- O seu código deve cobrir todos os casos de uso presentes no README, mesmo que não haja um teste implementado para tal.
+- A adição de novos testes é sempre bem-vinda.
+- Você deve enviar para nós o link do repositório público com a aplicação desenvolvida (GitHub, BitBucket, etc.).
+
+## O Desafio - Carrinho de compras
+O desafio consiste em uma API para gerenciamento do um carrinho de compras de e-commerce.
+
+Você deve desenvolver utilizando a linguagem Ruby e framework Rails, uma API Rest que terá 3 endpoins que deverão implementar as seguintes funcionalidades:
+
+### 1. Registrar um produto no carrinho
+Criar um endpoint para inserção de produtos no carrinho.
+
+Se não existir um carrinho para a sessão, criar o carrinho e salvar o ID do carrinho na sessão.
+
+Adicionar o produto no carrinho e devolver o payload com a lista de produtos do carrinho atual.
+
 
 ROTA: `/cart`
 Payload:
@@ -38,8 +61,8 @@ Response
 }
 ```
 
-### Listar itens do carrinho atual
-Lista os produtos do carrinho da sessão
+### 2. Listar itens do carrinho atual
+Criar um endpoint para listar os produtos no carrinho atual.
 
 ROTA: `/cart`
 
@@ -67,8 +90,8 @@ Response:
 }
 ```
 
-### Alterar a quantidade de produtos no carrinho 
-Incrementa a quantidade de do produto no carrinho
+### 3. Alterar a quantidade de produtos no carrinho 
+Um carrinho pode ter _N_ produtos, se o produto já existir no carrinho, apenas a quantidade dele deve ser alterada
 
 ROTA: `/cart/add_item`
 
@@ -103,7 +126,7 @@ Response:
 }
 ```
 
-### Remover um produto do carrinho 
+### 3. Remover um produto do carrinho 
 
 Criar um endpoint para excluir um produto do do carrinho. 
 
@@ -157,3 +180,6 @@ Executar os testes:
 ```bash
 bundle exec rspec
 ```
+
+### Como enviar seu projeto
+Salve seu código em um versionador de código (GitHub, GitLab, Bitbucket) e nos envie o link publico. Se achar necessário, informe no README as instruções para execução ou qualquer outra informação relevante para correção/entendimento da sua solução.
