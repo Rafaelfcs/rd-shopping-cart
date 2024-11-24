@@ -25,6 +25,7 @@ RSpec.describe CartProduct, type: :model do
 
   describe 'delegations' do
     it { is_expected.to delegate_method(:price).to(:product) }
+    it { is_expected.to delegate_method(:name).to(:product) }
   end
 
   describe 'instance methods' do

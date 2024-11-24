@@ -17,7 +17,7 @@ class CartProduct < ApplicationRecord
   belongs_to :cart, touch: true
   belongs_to :product
 
-  delegate :price, to: :product
+  delegate :price, :name, to: :product
 
   def total_price
     price * quantity

@@ -6,6 +6,8 @@ class CartsController < ApplicationController
 
   def create
     add_product_to_cart
+
+    render json: cart_json, status: :created
   end
 
   private
@@ -30,6 +32,26 @@ class CartsController < ApplicationController
       session[:cart_id] = cart.id
 
       cart
+    end
+  end
+
+  def cart_json
+    {
+      cart_id: cart.id,
+      products: cart_products,
+      total_price: cart.total_price
+    }
+  end
+
+  def cart_products
+    cart.cart_products.map do |cart_product|
+      {
+        id: cart_product.product.id,
+        name: cart_product.name,
+        quantity: cart_product.quantity,
+        unity_price: cart_product.price,
+        total_price: cart_product.total_price
+      }
     end
   end
 
