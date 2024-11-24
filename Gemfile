@@ -18,11 +18,14 @@ gem 'guard-livereload', require: false
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'rspec-rails', '~> 6.1.0'
+  gem 'factory_bot_rails'
+  gem 'faker'
   gem 'rubocop'
   gem "annotate"
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
-end
-
-group :development do
+  gem 'pry'
+  gem 'pry-rails'
+  gem 'pry-byebug'
+  gem 'shoulda-matchers', '~> 4.0'
 end

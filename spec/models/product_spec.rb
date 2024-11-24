@@ -1,8 +1,22 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: products
+#
+#  id         :bigint           not null, primary key
+#  name       :string
+#  price      :decimal(17, 2)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 require 'rails_helper'
 
 RSpec.describe Product, type: :model do
+  describe 'associations' do
+    it { is_expected.to have_many(:cart_products) }
+  end
+
   context 'when validating' do
     it 'validates presence of name' do
       product = described_class.new(price: 100)
