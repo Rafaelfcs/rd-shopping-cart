@@ -7,7 +7,6 @@ class CartsController < ApplicationController
 
   def create
     add_product_to_cart
-    update_cart_last_interaction
 
     render json: cart_json, status: :created
   end
@@ -19,8 +18,7 @@ class CartsController < ApplicationController
   def add_item
     return render json: { error: 'Product not found' }, status: :not_found unless cart_product
 
-    increment_product
-    update_cart_last_interaction
+    cart_product.update(quantity: cart_product.quantity + cart_params[:quantity].to_i)
 
     render json: cart_json, status: :ok
   end
@@ -29,7 +27,6 @@ class CartsController < ApplicationController
     return render json: { error: 'Product not found' }, status: :not_found unless cart_product
 
     cart_product.destroy
-    update_cart_last_interaction
 
     render json: cart_json, status: :ok
   end
@@ -50,14 +47,6 @@ class CartsController < ApplicationController
 
   def add_product_to_cart
     cart.cart_products << CartProduct.new(product: product, quantity: cart_params[:quantity])
-  end
-
-  def increment_product
-    cart_product.update(quantity: cart_product.quantity + cart_params[:quantity].to_i)
-  end
-
-  def update_cart_last_interaction
-    cart.update(last_interaction_at: Time.current)
   end
 
   def find_or_create_cart

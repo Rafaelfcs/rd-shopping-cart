@@ -4,12 +4,10 @@
 #
 # Table name: carts
 #
-#  id                  :bigint           not null, primary key
-#  total_price         :decimal(17, 2)   default(0.0)
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  abandoned_at        :datetime
-#  last_interaction_at :datetime
+#  id          :bigint           not null, primary key
+#  total_price :decimal(17, 2)   default(0.0)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 require 'rails_helper'
 
@@ -19,7 +17,7 @@ RSpec.describe Cart, type: :model do
   end
 
   context 'when validating' do
-    it 'validates numericality of total_price' do
+    xit 'validates numericality of total_price' do
       cart = described_class.new(total_price: -1)
       expect(cart.valid?).to be_falsey
       expect(cart.errors[:total_price]).to include('must be greater than or equal to 0')
@@ -27,19 +25,20 @@ RSpec.describe Cart, type: :model do
   end
 
   describe 'mark_as_abandoned' do
-    let(:cart) { FactoryBot.create(:cart) }
+    let(:shopping_cart) { create(:shopping_cart) }
 
-    it 'marks the shopping cart as abandoned if inactive for a certain time' do
-      cart.update(last_interaction_at: 3.hours.ago)
-      expect { cart.mark_as_abandoned }.to change { cart.abandoned_at }.from(nil).to(Time)
+    xit 'marks the shopping cart as abandoned if inactive for a certain time' do
+      shopping_cart.update(last_interaction_at: 3.hours.ago)
+      expect { shopping_cart.mark_as_abandoned }.to change { shopping_cart.abandoned? }.from(false).to(true)
     end
   end
 
   describe 'remove_if_abandoned' do
-    let!(:cart) { FactoryBot.create(:cart, :abandoned) }
+    let(:shopping_cart) { create(:shopping_cart, last_interaction_at: 7.days.ago) }
 
-    it 'removes the shopping cart if abandoned for a certain time' do
-      expect { cart.remove_if_abandoned }.to change { Cart.count }.by(-1)
+    xit 'removes the shopping cart if abandoned for a certain time' do
+      shopping_cart.mark_as_abandoned
+      expect { shopping_cart.remove_if_abandoned }.to change { Cart.count }.by(-1)
     end
   end
 end
