@@ -48,4 +48,46 @@ RSpec.describe CartsController, type: :controller do
       end
     end
   end
+
+  describe 'GET #show' do
+    subject { get :show, session: session }
+
+    context 'when cart is found' do
+      let!(:cart_product) do
+        FactoryBot.create(:cart_product, cart: cart, product: product, quantity: 1)
+      end
+      let(:product) { FactoryBot.create(:product) }
+
+      let(:expected_json) do
+        {
+          cart_id: cart.id,
+          products: [
+            {
+              id: product.id,
+              name: product.name,
+              quantity: cart_product.quantity,
+              unity_price: product.price,
+              total_price: cart_product.total_price
+            }
+          ],
+          total_price: cart.total_price
+        }
+      end
+      it 'returns the cart' do
+        subject
+
+        expect(response.body).to eq(expected_json.to_json)
+      end
+    end
+
+    context 'when cart is not found' do
+      let(:session) { { cart_id: 0 } }
+
+      it 'returns not found status' do
+        subject
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end

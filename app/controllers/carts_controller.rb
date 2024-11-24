@@ -10,6 +10,10 @@ class CartsController < ApplicationController
     render json: cart_json, status: :created
   end
 
+  def show
+    render json: cart_json, status: :ok
+  end
+
   private
 
   def cart
