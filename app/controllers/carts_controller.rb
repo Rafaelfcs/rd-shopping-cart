@@ -29,7 +29,7 @@ class CartsController < ApplicationController
   end
 
   def find_or_create_cart
-    if action_method?(:create) && session[:cart_id].nil?
+    if action_name == 'create' && session[:cart_id].nil?
       cart = Cart.create
       session[:cart_id] = cart.id
 
