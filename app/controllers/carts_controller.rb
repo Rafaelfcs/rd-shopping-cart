@@ -29,14 +29,14 @@ class CartsController < ApplicationController
   end
 
   def find_or_create_cart
-    if session[:cart_id]
-      Cart.find(session[:cart_id])
-    else
+    if action_method?(:create) && session[:cart_id].nil?
       cart = Cart.create
       session[:cart_id] = cart.id
 
-      cart
+      return cart
     end
+
+    Cart.find(session[:cart_id])
   end
 
   def cart_json
@@ -61,10 +61,5 @@ class CartsController < ApplicationController
 
   def cart_params
     params.permit(:product_id, :quantity)
-  end
-
-  # Overriding ApplicationController method
-  def record_not_found
-    render json: { error: 'Product not found' }, status: :not_found
   end
 end
