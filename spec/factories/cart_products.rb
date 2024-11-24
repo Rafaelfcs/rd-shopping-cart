@@ -11,15 +11,11 @@
 #  updated_at :datetime         not null
 #  quantity   :integer
 #
-class CartProduct < ApplicationRecord
-  validates :quantity, numericality: { greater_than_or_equal_to: 1 }
+FactoryBot.define do
+  factory :cart_product do
+    quantity { Faker::Number.within(range: 1..3) }
 
-  belongs_to :cart, touch: true
-  belongs_to :product
-
-  delegate :price, to: :product
-
-  def total_price
-    price * quantity
+    cart
+    product
   end
 end

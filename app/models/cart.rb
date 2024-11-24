@@ -19,7 +19,7 @@ class Cart < ApplicationRecord
   private
 
   def update_total_price
-    new_total_price = cart_products.map(&:price).sum
+    new_total_price = cart_products.map(&:total_price).sum
 
     update_column(:total_price, new_total_price) if total_price != new_total_price
   end

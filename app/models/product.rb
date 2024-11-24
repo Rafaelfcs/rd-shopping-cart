@@ -15,4 +15,12 @@ class Product < ApplicationRecord
   validates_numericality_of :price, greater_than_or_equal_to: 0
 
   has_many :cart_products, dependent: :destroy
+
+  after_save :update_cart_products
+
+  private
+
+  def update_cart_products
+    cart_products.each(&:touch) if saved_change_to_price?
+  end
 end
