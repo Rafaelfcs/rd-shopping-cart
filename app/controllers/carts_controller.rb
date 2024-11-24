@@ -3,6 +3,7 @@
 class CartsController < ApplicationController
   before_action :cart
   before_action :product, only: :create
+  before_action :cart_product, only: :add_item
 
   def create
     add_product_to_cart
@@ -14,6 +15,14 @@ class CartsController < ApplicationController
     render json: cart_json, status: :ok
   end
 
+  def add_item
+    return render json: { error: 'Product not found' }, status: :not_found unless cart_product
+
+    cart_product.update(quantity: cart_product.quantity + cart_params[:quantity].to_i)
+
+    render json: cart_json, status: :ok
+  end
+
   private
 
   def cart
@@ -22,6 +31,10 @@ class CartsController < ApplicationController
 
   def product
     @product ||= Product.find(cart_params[:product_id])
+  end
+
+  def cart_product
+    @cart_product ||= cart.cart_products.find_by(product_id: cart_params[:product_id])
   end
 
   def add_product_to_cart
