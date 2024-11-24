@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   resources :products
   get "up" => "rails/health#show", as: :rails_health_check
 
-  resources :carts, only: [:create]
+  resource :cart, only: [:create] do
+    post '/cart', to: 'carts#create'
+  end
 
   root "rails/health#show"
 end
