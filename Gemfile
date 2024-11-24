@@ -22,7 +22,8 @@ group :development, :test do
   gem "annotate"
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
-end
-
-group :development do
+  gem 'pry'
+  gem 'pry-rails'
+  gem 'pry-byebug'
+  gem 'shoulda-matchers', '~> 4.0'
 end
