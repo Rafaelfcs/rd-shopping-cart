@@ -11,6 +11,8 @@
 #  updated_at :datetime         not null
 #
 class CartProduct < ApplicationRecord
-  belongs_to :cart
+  belongs_to :cart, touch: true
   belongs_to :product
+
+  delegate :price, to: :product
 end
