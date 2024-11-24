@@ -1,12 +1,9 @@
 # Desafio técnico e-commerce
 
 ### Registrar um produto no carrinho
-Criar um endpoint para inserção de produtos no carrinho.
+Endpoint para inserção de produtos no carrinho.
 
-Se não existir um carrinho para a sessão, criar o carrinho e salvar o ID do carrinho na sessão.
-
-Adicionar o produto no carrinho e devolver o payload com a lista de produtos do carrinho atual.
-
+Se não existir um carrinho para a sessão, irá criar um carrinho.
 
 ROTA: `/cart`
 Payload:
@@ -42,7 +39,7 @@ Response
 ```
 
 ### Listar itens do carrinho atual
-Criar um endpoint para listar os produtos no carrinho atual.
+Lista os produtos do carrinho da sessão
 
 ROTA: `/cart`
 
@@ -71,7 +68,7 @@ Response:
 ```
 
 ### Alterar a quantidade de produtos no carrinho 
-Um carrinho pode ter _N_ produtos, se o produto já existir no carrinho, apenas a quantidade dele deve ser alterada
+Incrementa a quantidade de do produto no carrinho
 
 ROTA: `/cart/add_item`
 
@@ -110,7 +107,30 @@ Response:
 
 Criar um endpoint para excluir um produto do do carrinho. 
 
-ROTA: `/cart/:product_id`
+ROTA: `/cart/remove_item`
+Payload:
+```
+{
+  "product_id": 3,
+  "quantity": 1
+}
+```
+Response:
+```json
+{
+    "cart_id": 9,
+    "products": [ // produto de id 3 deve ser removido
+        {
+            "id": 2,
+            "name": "iPhone 15 Pro Max",
+            "quantity": 1,
+            "unity_price": "14999.99",
+            "total_price": "14999.99"
+        }
+    ],
+    "total_price": "14999.99"
+}
+```
 
 ## Informações técnicas
 
