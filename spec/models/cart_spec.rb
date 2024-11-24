@@ -1,8 +1,21 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: carts
+#
+#  id          :bigint           not null, primary key
+#  total_price :decimal(17, 2)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 require 'rails_helper'
 
 RSpec.describe Cart, type: :model do
+  describe 'associations' do
+    it { is_expected.to have_many(:cart_products) }
+  end
+
   context 'when validating' do
     xit 'validates numericality of total_price' do
       cart = described_class.new(total_price: -1)
