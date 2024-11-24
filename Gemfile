@@ -19,6 +19,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'rspec-rails', '~> 6.1.0'
   gem 'factory_bot_rails'
+  gem 'faker'
   gem 'rubocop'
   gem "annotate"
   gem 'rubocop-rails'
