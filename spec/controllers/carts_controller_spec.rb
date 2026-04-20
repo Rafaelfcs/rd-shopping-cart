@@ -66,7 +66,7 @@ RSpec.describe CartsController, type: :controller do
               id: product.id,
               name: product.name,
               quantity: cart_product.quantity,
-              unity_price: product.price,
+              unit_price: product.price,
               total_price: cart_product.total_price
             }
           ],
@@ -102,6 +102,12 @@ RSpec.describe CartsController, type: :controller do
       it 'increases the quantity of the product' do
         expect { subject }.to change { cart_product.reload.quantity }.by(quantity)
       end
+
+      it 'updates last_interaction_at' do
+        old_time = cart.reload.last_interaction_at
+        subject
+        expect(cart.reload.last_interaction_at).to be > old_time
+      end
     end
 
     context 'when product is not found on cart' do
@@ -117,6 +123,28 @@ RSpec.describe CartsController, type: :controller do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context 'when invalid parameters are provided' do
+      context 'with negative quantity' do
+        let(:params) { { product_id: product.id, quantity: -1 } }
+
+        it 'returns unprocessable_entity status' do
+          subject
+
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'with zero quantity' do
+        let(:params) { { product_id: product.id, quantity: 0 } }
+
+        it 'returns unprocessable_entity status' do
+          subject
+
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+    end
   end
 
   describe 'DELETE #remove_item' do
@@ -127,8 +155,14 @@ RSpec.describe CartsController, type: :controller do
         FactoryBot.create(:cart_product, cart: cart, product: product, quantity: 1)
       end
 
-      it 'remove the product from the cart' do
+      it 'removes the product from the cart' do
         expect { subject }.to change { cart.cart_products.count }.by(-1)
+      end
+
+      it 'updates last_interaction_at' do
+        old_time = cart.reload.last_interaction_at
+        subject
+        expect(cart.reload.last_interaction_at).to be > old_time
       end
     end
 
