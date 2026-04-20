@@ -15,7 +15,8 @@ class CartProduct < ApplicationRecord
   # Maximum quantity to prevent overflow
   MAX_QUANTITY = 999_999
 
-  validates :quantity, presence: true, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: MAX_QUANTITY }
+  validates :quantity, presence: true,
+                       numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: MAX_QUANTITY }
 
   belongs_to :cart, touch: true
   belongs_to :product

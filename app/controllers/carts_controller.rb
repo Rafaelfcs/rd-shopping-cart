@@ -24,25 +24,26 @@ class CartsController < ApplicationController
     return render json: { error: 'Product not found' }, status: :not_found unless cart_product
 
     old_quantity = cart_product.quantity
-    increment_product
-    update_cart_last_interaction
+    perform_add_item
 
-    Rails.logger.info("Product #{cart_params[:product_id]} quantity updated from #{old_quantity} to #{cart_product.reload.quantity} in cart #{cart.id}")
+    new_quantity = cart_product.reload.quantity
+    message = "Product #{cart_params[:product_id]} quantity updated from #{old_quantity} to #{new_quantity} in cart #{cart.id}"
+    Rails.logger.info(message)
+
     render json: cart_json, status: :ok
   end
 
   def remove_item
     return render json: { error: 'Product not found' }, status: :not_found unless cart_product
 
-    product_id = cart_product.product_id
-    cart_product.destroy
-    update_cart_last_interaction
+    success = perform_remove_item
 
-    Rails.logger.info("Product #{product_id} removed from cart #{cart.id}")
+    unless success
+      render json: { error: 'Failed to remove item' }, status: :unprocessable_entity
+      return
+    end
+
     render json: cart_json, status: :ok
-  rescue StandardError => e
-    Rails.logger.error("Error removing item from cart: #{e.message}")
-    render json: { error: 'Failed to remove item' }, status: :unprocessable_entity
   end
 
   private
@@ -51,9 +52,9 @@ class CartsController < ApplicationController
     product_id = params[:product_id].to_i
     quantity = params[:quantity].to_i
 
-    if product_id <= 0 || quantity <= 0
-      render json: { error: 'Invalid product_id or quantity' }, status: :unprocessable_entity
-    end
+    return unless product_id <= 0 || quantity <= 0
+
+    render json: { error: 'Invalid product_id or quantity' }, status: :unprocessable_entity
   end
 
   def cart
@@ -83,17 +84,26 @@ class CartsController < ApplicationController
   end
 
   def find_or_create_cart
-    if action_name == 'create' && session[:cart_id].nil?
-      cart = Cart.create
-      session[:cart_id] = cart.id
+    return create_new_cart if creating_and_no_session_cart?
 
-      return cart
-    end
-
-    # Validate session cart exists before querying
-    return Cart.create unless session[:cart_id] && Cart.exists?(session[:cart_id])
+    return Cart.create unless valid_session_cart?
 
     Cart.find(session[:cart_id])
+  end
+
+  def creating_and_no_session_cart?
+    action_name == 'create' && session[:cart_id].nil?
+  end
+
+  def create_new_cart
+    cart = Cart.create
+    session[:cart_id] = cart.id
+
+    cart
+  end
+
+  def valid_session_cart?
+    session[:cart_id] && Cart.exists?(session[:cart_id])
   end
 
   def cart_json
@@ -121,5 +131,24 @@ class CartsController < ApplicationController
       product_id: params[:product_id].to_i,
       quantity: params[:quantity].to_i
     }
+  end
+
+  def perform_add_item
+    increment_product
+    update_cart_last_interaction
+  end
+
+  def perform_remove_item
+    product_id = cart_product.product_id
+
+    cart_product.destroy
+    update_cart_last_interaction
+
+    Rails.logger.info("Product #{product_id} removed from cart #{cart.id}")
+
+    true
+  rescue StandardError => e
+    Rails.logger.error("Error removing item from cart: #{e.message}")
+    false
   end
 end

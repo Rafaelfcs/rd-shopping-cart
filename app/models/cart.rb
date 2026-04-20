@@ -24,16 +24,17 @@ class Cart < ApplicationRecord
   scope :to_be_abandoned, -> { where('last_interaction_at < ?', 3.hours.ago) }
 
   def mark_as_abandoned
-    if update(abandoned_at: Time.current)
-      Rails.logger.info("Cart #{id} marked as abandoned at #{abandoned_at}")
-    end if last_interaction_at < 3.hours.ago
+    return unless last_interaction_at < 3.hours.ago
+    return unless (last_interaction_at < 3.hours.ago) && update(abandoned_at: Time.current)
+
+    Rails.logger.info("Cart #{id} marked as abandoned at #{abandoned_at}")
   end
 
   def remove_if_abandoned
-    if abandoned_at < 7.days.ago
-      Rails.logger.info("Cart #{id} being removed (abandoned for 7+ days)")
-      destroy
-    end
+    return unless abandoned_at < 7.days.ago
+
+    Rails.logger.info("Cart #{id} being removed (abandoned for 7+ days)")
+    destroy
   end
 
   private
