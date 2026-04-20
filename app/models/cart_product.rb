@@ -12,7 +12,10 @@
 #  quantity   :integer
 #
 class CartProduct < ApplicationRecord
-  validates :quantity, numericality: { greater_than_or_equal_to: 1 }
+  # Maximum quantity to prevent overflow
+  MAX_QUANTITY = 999_999
+
+  validates :quantity, presence: true, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: MAX_QUANTITY }
 
   belongs_to :cart, touch: true
   belongs_to :product
@@ -20,6 +23,6 @@ class CartProduct < ApplicationRecord
   delegate :price, :name, to: :product
 
   def total_price
-    price * quantity
+    (price * quantity).round(2)
   end
 end
