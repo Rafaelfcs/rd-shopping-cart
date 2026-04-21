@@ -25,11 +25,7 @@ class CartsController < ApplicationController
     validate_params_or_render_error and return unless params_valid?
     return render json: { error: 'Product not found' }, status: :not_found unless cart_product
 
-    old_quantity = cart_product.quantity
-    cart_product.update(quantity: cart_product.quantity + cart_params[:quantity])
-    update_cart_last_interaction
-
-    Rails.logger.info("Product #{cart_params[:product_id]} quantity updated from #{old_quantity} to #{cart_product.quantity} in cart #{cart.id}")
+    perform_add_item_and_log
     render json: cart_json, status: :ok
   end
 
@@ -53,7 +49,7 @@ class CartsController < ApplicationController
   def params_valid?
     product_id = params[:product_id].to_i
     quantity = params[:quantity].to_i
-    product_id > 0 && quantity > 0
+    product_id.positive? && quantity.positive?
   end
 
   def validate_params_or_render_error
@@ -139,6 +135,18 @@ class CartsController < ApplicationController
   def perform_add_item
     increment_product
     update_cart_last_interaction
+  end
+
+  def perform_add_item_and_log
+    old_quantity = cart_product.quantity
+    perform_add_item
+    product_id = cart_params[:product_id]
+    new_quantity = cart_product.quantity
+    cart_id = cart.id
+
+    Rails.logger.info(
+      "Product #{product_id} quantity updated from #{old_quantity} to #{new_quantity} in cart #{cart_id}"
+    )
   end
 
   def perform_remove_item
