@@ -5,12 +5,11 @@ Rails.application.routes.draw do
   resources :products
   get "up" => "rails/health#show", as: :rails_health_check
 
-  resource :cart do
-    post '/cart', to: 'carts#create'
-    post '/add_item', to: 'carts#add_item'
-    get '/cart', to: 'carts#show'
-    delete '/:product_id', to: 'carts#remove_item'
-  end
+  # Cart routes
+  post '/cart', to: 'carts#create'
+  get '/cart', to: 'carts#show'
+  post '/cart/add_item', to: 'carts#add_item'
+  delete '/cart/:product_id', to: 'carts#remove_item'
 
   root "rails/health#show"
 end

@@ -22,13 +22,21 @@ class Cart < ApplicationRecord
   scope :abandoned, -> { where.not(abandoned_at: nil) }
   scope :to_be_deleted, -> { where('abandoned_at < ?', 7.days.ago) }
   scope :to_be_abandoned, -> { where('last_interaction_at < ?', 3.hours.ago) }
+  # Only consider active carts (not already marked abandoned) for abandonment
+  scope :to_be_abandoned, -> { where(abandoned_at: nil).where('last_interaction_at < ?', 3.hours.ago) }
 
   def mark_as_abandoned
-    update(abandoned_at: Time.current) if last_interaction_at < 3.hours.ago
+    return unless last_interaction_at < 3.hours.ago
+    return unless (last_interaction_at < 3.hours.ago) && update(abandoned_at: Time.current)
+
+    Rails.logger.info("Cart #{id} marked as abandoned at #{abandoned_at}")
   end
 
   def remove_if_abandoned
-    destroy if abandoned_at < 7.days.ago
+    return unless abandoned_at < 7.days.ago
+
+    Rails.logger.info("Cart #{id} being removed (abandoned for 7+ days)")
+    destroy
   end
 
   private

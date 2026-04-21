@@ -60,6 +60,9 @@ RSpec.configure do |config|
   # https://rspec.info/features/6-0/rspec-rails
   config.infer_spec_type_from_file_location!
 
+  # Provide time helpers like `travel_to` in specs
+  config.include ActiveSupport::Testing::TimeHelpers
+
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:

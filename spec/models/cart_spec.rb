@@ -42,4 +42,35 @@ RSpec.describe Cart, type: :model do
       expect { cart.remove_if_abandoned }.to change { Cart.count }.by(-1)
     end
   end
+
+  describe 'scopes' do
+    let!(:active_cart) { FactoryBot.create(:cart, last_interaction_at: 1.hour.ago) }
+    let!(:abandoned_cart) { FactoryBot.create(:cart, abandoned_at: 2.days.ago, last_interaction_at: 2.days.ago) }
+    let!(:old_abandoned_cart) { FactoryBot.create(:cart, abandoned_at: 8.days.ago, last_interaction_at: 8.days.ago) }
+    let!(:inactive_cart) { FactoryBot.create(:cart, last_interaction_at: 4.hours.ago) }
+
+    describe '.active' do
+      it 'returns only active carts' do
+        expect(Cart.active.map(&:id)).to contain_exactly(active_cart.id, inactive_cart.id)
+      end
+    end
+
+    describe '.abandoned' do
+      it 'returns only abandoned carts' do
+        expect(Cart.abandoned.map(&:id)).to contain_exactly(abandoned_cart.id, old_abandoned_cart.id)
+      end
+    end
+
+    describe '.to_be_deleted' do
+      it 'returns carts abandoned for more than 7 days' do
+        expect(Cart.to_be_deleted.map(&:id)).to contain_exactly(old_abandoned_cart.id)
+      end
+    end
+
+    describe '.to_be_abandoned' do
+      it 'returns active carts inactive for more than 3 hours' do
+        expect(Cart.to_be_abandoned.map(&:id)).to contain_exactly(inactive_cart.id)
+      end
+    end
+  end
 end
