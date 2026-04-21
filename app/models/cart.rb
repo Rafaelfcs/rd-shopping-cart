@@ -22,6 +22,8 @@ class Cart < ApplicationRecord
   scope :abandoned, -> { where.not(abandoned_at: nil) }
   scope :to_be_deleted, -> { where('abandoned_at < ?', 7.days.ago) }
   scope :to_be_abandoned, -> { where('last_interaction_at < ?', 3.hours.ago) }
+  # Only consider active carts (not already marked abandoned) for abandonment
+  scope :to_be_abandoned, -> { where(abandoned_at: nil).where('last_interaction_at < ?', 3.hours.ago) }
 
   def mark_as_abandoned
     return unless last_interaction_at < 3.hours.ago

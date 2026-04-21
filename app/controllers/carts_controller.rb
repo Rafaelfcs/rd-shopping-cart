@@ -47,9 +47,15 @@ class CartsController < ApplicationController
   private
 
   def params_valid?
-    product_id = params[:product_id].to_i
     quantity = params[:quantity].to_i
-    product_id.positive? && quantity.positive?
+
+    # For create we need a valid product_id and quantity. For add/remove only quantity matters
+    if action_name == 'create'
+      product_id = params[:product_id].to_i
+      product_id.positive? && quantity.positive?
+    else
+      quantity.positive?
+    end
   end
 
   def validate_params_or_render_error
