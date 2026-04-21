@@ -105,7 +105,9 @@ RSpec.describe CartsController, type: :controller do
 
       it 'updates last_interaction_at' do
         old_time = cart.reload.last_interaction_at
-        subject
+        travel_to 1.second.from_now do
+          subject
+        end
         expect(cart.reload.last_interaction_at).to be > old_time
       end
     end
@@ -161,7 +163,9 @@ RSpec.describe CartsController, type: :controller do
 
       it 'updates last_interaction_at' do
         old_time = cart.reload.last_interaction_at
-        subject
+        travel_to 1.second.from_now do
+          subject
+        end
         expect(cart.reload.last_interaction_at).to be > old_time
       end
     end

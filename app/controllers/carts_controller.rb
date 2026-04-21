@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 class CartsController < ApplicationController
-  before_action :validate_cart_params, only: %i[create add_item remove_item]
   before_action :cart
   before_action :product, only: :create
   before_action :cart_product, only: %i[add_item remove_item]
 
   def create
+    validate_params_or_render_error and return unless params_valid?
+
     ActiveRecord::Base.transaction do
       add_product_to_cart
       update_cart_last_interaction
@@ -21,39 +22,41 @@ class CartsController < ApplicationController
   end
 
   def add_item
+    validate_params_or_render_error and return unless params_valid?
     return render json: { error: 'Product not found' }, status: :not_found unless cart_product
 
     old_quantity = cart_product.quantity
-    perform_add_item
+    cart_product.update(quantity: cart_product.quantity + cart_params[:quantity])
+    update_cart_last_interaction
 
-    new_quantity = cart_product.reload.quantity
-    message = "Product #{cart_params[:product_id]} quantity updated from #{old_quantity} to #{new_quantity} in cart #{cart.id}"
-    Rails.logger.info(message)
-
+    Rails.logger.info("Product #{cart_params[:product_id]} quantity updated from #{old_quantity} to #{cart_product.quantity} in cart #{cart.id}")
     render json: cart_json, status: :ok
   end
 
   def remove_item
+    validate_params_or_render_error and return unless params_valid?
     return render json: { error: 'Product not found' }, status: :not_found unless cart_product
 
-    success = perform_remove_item
+    product_id = cart_product.product_id
+    cart_product.destroy
+    update_cart_last_interaction
 
-    unless success
-      render json: { error: 'Failed to remove item' }, status: :unprocessable_entity
-      return
-    end
-
+    Rails.logger.info("Product #{product_id} removed from cart #{cart.id}")
     render json: cart_json, status: :ok
+  rescue StandardError => e
+    Rails.logger.error("Error removing item from cart: #{e.message}")
+    render json: { error: 'Failed to remove item' }, status: :unprocessable_entity
   end
 
   private
 
-  def validate_cart_params
+  def params_valid?
     product_id = params[:product_id].to_i
     quantity = params[:quantity].to_i
+    product_id > 0 && quantity > 0
+  end
 
-    return unless product_id <= 0 || quantity <= 0
-
+  def validate_params_or_render_error
     render json: { error: 'Invalid product_id or quantity' }, status: :unprocessable_entity
   end
 
@@ -86,7 +89,7 @@ class CartsController < ApplicationController
   def find_or_create_cart
     return create_new_cart if creating_and_no_session_cart?
 
-    return Cart.create unless valid_session_cart?
+    raise ActiveRecord::RecordNotFound unless valid_session_cart?
 
     Cart.find(session[:cart_id])
   end

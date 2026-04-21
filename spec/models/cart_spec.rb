@@ -44,7 +44,7 @@ RSpec.describe Cart, type: :model do
   end
 
   describe 'scopes' do
-    let!(:active_cart) { FactoryBot.create(:cart) }
+    let!(:active_cart) { FactoryBot.create(:cart, last_interaction_at: 1.hour.ago) }
     let!(:abandoned_cart) { FactoryBot.create(:cart, abandoned_at: 2.days.ago, last_interaction_at: 2.days.ago) }
     let!(:old_abandoned_cart) { FactoryBot.create(:cart, abandoned_at: 8.days.ago, last_interaction_at: 8.days.ago) }
     let!(:inactive_cart) { FactoryBot.create(:cart, last_interaction_at: 4.hours.ago) }

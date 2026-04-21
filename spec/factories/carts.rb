@@ -13,6 +13,8 @@
 #
 FactoryBot.define do
   factory :cart do
+    last_interaction_at { Time.current }
+
     trait :with_products do
       after(:create) do |cart|
         create_list(:cart_product, 3, cart: cart)
